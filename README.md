@@ -15,7 +15,7 @@ O módulo gera dinamicamente o Payload EMV (BR Code) exigido pelo Banco Central 
 ## 📋 Requisitos
 
 * WHMCS 7.x ou superior (Testado e compatível com as versões mais recentes 8.x).
-* PHP 7.2 a 8.2.
+* PHP 7.2 a 8.3.
 
 ## 🛠️ Instalação
 
