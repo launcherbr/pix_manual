@@ -71,17 +71,34 @@ function pix_manual_format_string($id, $value) {
  * Função Auxiliar: Gerador do Código EMV (BR Code)
  */
 function pix_manual_gerar_payload($pixKey, $merchantName, $merchantCity, $amount, $txid) {
-    // Tratamento de tamanhos máximos obrigatórios pelo BACEN
-    $merchantName = substr(iconv('UTF-8', 'ASCII//TRANSLIT', $merchantName), 0, 25);
-    $merchantCity = substr(iconv('UTF-8', 'ASCII//TRANSLIT', $merchantCity), 0, 15);
-    $txid = substr($txid, 0, 25);
+    
+    // Rotina nativa e segura para remover acentos e caracteres especiais
+    $limpar_texto = function($str) {
+        $map = [
+            'á'=>'a','à'=>'a','ã'=>'a','â'=>'a','é'=>'e','ê'=>'e','í'=>'i',
+            'ó'=>'o','ô'=>'o','õ'=>'o','ú'=>'u','ü'=>'u','ç'=>'c',
+            'Á'=>'A','À'=>'A','Ã'=>'A','Â'=>'A','É'=>'E','Ê'=>'E','Í'=>'I',
+            'Ó'=>'O','Ô'=>'O','Õ'=>'O','Ú'=>'U','Ü'=>'U','Ç'=>'C'
+        ];
+        $str = strtr($str, $map);
+        return preg_replace('/[^a-zA-Z0-9 ]/', '', $str);
+    };
+
+    // Higienização de campos
+    $pixKey = trim(str_replace(' ', '', $pixKey));
+    $merchantName = substr($limpar_texto($merchantName), 0, 25);
+    $merchantCity = substr($limpar_texto($merchantCity), 0, 15);
+    
+    // Fallback de segurança: Impede que o campo vá vazio e invalide o PIX
+    if (empty(trim($merchantName))) $merchantName = 'Empresa';
+    if (empty(trim($merchantCity))) $merchantCity = 'Cidade';
 
     $gui = pix_manual_format_string('00', 'BR.GOV.BCB.PIX');
     $key = pix_manual_format_string('01', $pixKey);
     $merchantAccount = pix_manual_format_string('26', $gui . $key);
     $merchantCategoryCode = pix_manual_format_string('52', '0000');
     $transactionCurrency = pix_manual_format_string('53', '986'); // 986 = BRL
-    $transactionAmount = pix_manual_format_string('54', number_format($amount, 2, '.', ''));
+    $transactionAmount = pix_manual_format_string('54', number_format((float)$amount, 2, '.', ''));
     $countryCode = pix_manual_format_string('58', 'BR');
     $merchantNameStr = pix_manual_format_string('59', $merchantName);
     $merchantCityStr = pix_manual_format_string('60', $merchantCity);
@@ -100,17 +117,20 @@ function pix_manual_gerar_payload($pixKey, $merchantName, $merchantCity, $amount
                   $additionalDataFieldTemplate .
                   "6304";
 
-    // Calcula o CRC16 CCITT
+    // Calcula o CRC16 CCITT de forma segura para arquiteturas PHP mistas
     $polynomial = 0x1021;
     $res = 0xFFFF;
     for ($i = 0; $i < strlen($payloadStr); $i++) {
         $res ^= ord($payloadStr[$i]) << 8;
         for ($j = 0; $j < 8; $j++) {
-            $res = ($res & 0x8000) ? ($res << 1) ^ $polynomial : $res << 1;
+            if (($res & 0x8000) > 0) {
+                $res = (($res << 1) ^ $polynomial) & 0xFFFF;
+            } else {
+                $res = ($res << 1) & 0xFFFF;
+            }
         }
     }
-    $crc = strtoupper(dechex($res & 0xFFFF));
-    $crc = str_pad($crc, 4, '0', STR_PAD_LEFT);
+    $crc = strtoupper(str_pad(dechex($res), 4, '0', STR_PAD_LEFT));
 
     return $payloadStr . $crc;
 }
@@ -124,18 +144,19 @@ function pix_manual_link($params) {
     $amount = $params['amount'];
     
     // Parâmetros do módulo
-    $pixKey = trim($params['pixKey']);
-    $merchantName = trim($params['merchantName']);
-    $merchantCity = trim($params['merchantCity']);
+    $pixKey = $params['pixKey'];
+    $merchantName = $params['merchantName'];
+    $merchantCity = $params['merchantCity'];
     $ticketDeptId = $params['ticketDeptId'];
     
-    // Identificador único (TXID)
-    $txid = "FAT" . $invoiceId;
+    // ATENÇÃO: Para PIX manual (estático), o txid DEVE ser '***' para máxima compatibilidade.
+    // Muitos aplicativos bancários falham se houver um ID customizado em um PIX não registrado via API.
+    $txid = "***"; 
 
     // Gera a String do PIX Copia e Cola
     $payload = pix_manual_gerar_payload($pixKey, $merchantName, $merchantCity, $amount, $txid);
 
-    // Usa a API gratuita do qrserver para gerar a imagem. (Pode ser substituído por bibliotecas JS caso prefira)
+    // Usa a API gratuita do qrserver para gerar a imagem.
     $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" . urlencode($payload);
 
     // Monta o layout HTML
