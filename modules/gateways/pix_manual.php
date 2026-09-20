@@ -29,32 +29,44 @@ function pix_manual_config() {
             'FriendlyName' => 'Tipo de Chave',
             'Type' => 'dropdown',
             'Options' => 'CPF/CNPJ,Email,Telefone,Chave Aleatória',
-            'Description' => 'Selecione o tipo da sua chave PIX.',
+            'Description' => '<br><small class="text-muted" style="color:#777;">Selecione o formato da sua chave PIX.</small>',
         ),
         'pixKey' => array(
             'FriendlyName' => 'Chave PIX',
             'Type' => 'text',
-            'Size' => '50',
-            'Description' => 'Sua chave (Ex: para telefone use +5511999999999).',
+            'Size' => '60',
+            'Description' => '<br><small class="text-muted" style="color:#777;">Insira a sua chave (Ex: para telefone utilize +5511999999999).</small>',
         ),
         'merchantName' => array(
             'FriendlyName' => 'Nome do Recebedor',
             'Type' => 'text',
-            'Size' => '25',
-            'Description' => 'Nome exato como aparece na conta bancária (Máx 25 char).',
+            'Size' => '60',
+            'Description' => '<br><small class="text-muted" style="color:#777;">Nome exato como aparece na conta bancária (Máximo 25 caracteres).</small>',
         ),
         'merchantCity' => array(
             'FriendlyName' => 'Cidade',
             'Type' => 'text',
-            'Size' => '15',
-            'Description' => 'Cidade do recebedor (Máx 15 char).',
+            'Size' => '60',
+            'Description' => '<br><small class="text-muted" style="color:#777;">Cidade do recebedor (Máximo 15 caracteres).</small>',
         ),
         'ticketDeptId' => array(
-            'FriendlyName' => 'ID do Depto de Suporte',
+            'FriendlyName' => 'ID do Depto. de Suporte',
             'Type' => 'text',
-            'Size' => '5',
+            'Size' => '10',
             'Default' => '1',
-            'Description' => 'ID do departamento de faturamento para envio de comprovantes.',
+            'Description' => '<br><small class="text-muted" style="color:#777;">ID do departamento de faturação para onde serão enviados os comprovativos.</small>',
+        ),
+        'moduleNote' => array(
+            'FriendlyName' => 'Informação',
+            'Type' => 'text',
+            'Description' => '
+                <script>
+                    // Esconde a caixa de input padrão do WHMCS para exibir apenas o bloco visual
+                    jQuery("input[name=\'field[moduleNote]\']").hide();
+                </script>
+                <div class="alert alert-info" style="margin: 5px 0 0 0; padding: 15px; border-radius: 5px; color: #31708f; background-color: #d9edf7; border-color: #bce8f1;">
+                    <i class="fas fa-info-circle"></i> <strong>Nota Importante:</strong> Este é um módulo de PIX manual (estático). A baixa das faturas <strong>não é automática</strong>. Será exibido ao cliente um botão para anexar e enviar o comprovativo de pagamento diretamente para o departamento de suporte configurado acima.
+                </div>',
         ),
     );
 }
