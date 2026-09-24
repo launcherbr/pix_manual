@@ -55,3 +55,16 @@ Após enviar o arquivo, siga os passos abaixo no painel administrativo do WHMCS:
 ## 📝 Licença
 
 Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+> ## ⚠️ Disclaimer Legal e Comercial
+>
+> Este módulo é de propriedade da <strong>Launcher Tecnologia Ltda ME</strong>, inscrita no CNPJ: <strong>26.651.889/0001-60</strong>, com marca comercial e operação sob a fantasia <strong>Launcher Tech</strong>.
+>
+> O software é disponibilizado exclusivamente como <strong>módulo comercial com distribuição gratuita</strong>, sendo concedido por cortesia para uso e avaliação, sem qualquer intenção de venda, revenda, comercialização ou distribuição comercial indevida.
+>
+> É expressamente proibida a venda, revenda, reprodução em massa, redistribuição com fins lucrativos ou uso em contextos que configurem comercialização do código ou de versões derivadas sem autorização prévia e formal da titular dos direitos.
+>
+> Qualquer uso, adaptação ou redistribuição deve respeitar os termos de propriedade intelectual da empresa e a finalidade de uso cortês e não comercial.
+>
